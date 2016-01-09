@@ -17,3 +17,16 @@ class ClippedAdagradOptimizer(tf.train.AdagradOptimizer):
         return training_ops.apply_adagrad(
             var, acc, self._learning_rate_tensor, grad_clipped,
             use_locking=self._use_locking)
+
+
+class ClippedGDOptimizer(tf.train.GradientDescentOptimizer):
+    """GradientDescentOptimizer clipped grad to non-negative"""
+
+    def _apply_dense(self, grad, var):
+        lr = self._learning_rate_tensor
+        grad_clipped = tf.minimum(var/lr, grad)
+        return training_ops.apply_gradient_descent(
+            var,
+            self._learning_rate_tensor,
+            grad_clipped,
+            use_locking=self._use_locking).op
