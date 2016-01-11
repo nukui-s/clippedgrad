@@ -11,8 +11,8 @@ class ClippedAdagradOptimizer(tf.train.AdagradOptimizer):
         eps = 10e-8
         sqdiv = tf.pow(lr, 2) - tf.pow(var, 2)
         #if sqdiv < 0  the next var absolutely become positive
-        penalty = tf.to_float(tf.less(sqdiv, 0)) * 10e+8
-        g_max = (var * tf.sqrt(sqdiv)) / sqdiv + penalty
+        penalty = tf.to_float(tf.less(sqdiv, 0)) * 10e+12
+        g_max = (var * tf.sqrt(sqdiv)) / (sqdiv + eps) + penalty
         grad_clipped = tf.minimum(grad, g_max)
         return training_ops.apply_adagrad(
             var, acc, self._learning_rate_tensor, grad_clipped,
